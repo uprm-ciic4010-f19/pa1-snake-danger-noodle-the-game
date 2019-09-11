@@ -49,6 +49,7 @@ public class WorldOne extends WorldBase{
     public void render(Graphics g){
         super.render(g);
         player.render(g,playerLocation);
+        player.highScore(g);
     }
 
 }

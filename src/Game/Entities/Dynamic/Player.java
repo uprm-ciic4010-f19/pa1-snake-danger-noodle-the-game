@@ -6,14 +6,23 @@ import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.util.Random;
 
+import javax.swing.JFrame;
+import javax.swing.JOptionPane;
+
+import Game.GameStates.State;
+
 /**
  * Created by AlexVR on 7/2/2018.
  */
 public class Player {
 
+	public int key;
 	public int lenght;
 	public boolean justAte;
 	private Handler handler;
+	
+	public int score;
+	public double TheScore;
 
 	public int xCoord;
 	public int yCoord;
@@ -28,11 +37,13 @@ public class Player {
 		this.handler = handler;
 		xCoord = 0;
 		yCoord = 0;
+		TheScore = 0;
+		score = 0;
 		moveCounter = 0;
 		direction= "Right";
 		justAte = false;
 		lenght= 1;
-
+		
 	}
 
 	public void tick(){
@@ -42,12 +53,16 @@ public class Player {
 			moveCounter=0;
 		}
 		if(handler.getKeyManager().keyJustPressed(KeyEvent.VK_UP)){
+			if(direction !="Down")
 			direction="Up";
 		}if(handler.getKeyManager().keyJustPressed(KeyEvent.VK_DOWN)){
+			if(direction !="Up")
 			direction="Down";
 		}if(handler.getKeyManager().keyJustPressed(KeyEvent.VK_LEFT)){
+			if(direction !="Right")
 			direction="Left";
 		}if(handler.getKeyManager().keyJustPressed(KeyEvent.VK_RIGHT)){
+			if(direction !="Left")
 			direction="Right";
 		}
 		if (handler.getKeyManager().keyJustPressed(KeyEvent.VK_N)) {
@@ -60,6 +75,10 @@ public class Player {
 		if (handler.getKeyManager().keyJustPressed(KeyEvent.VK_MINUS)) {
 			speed ++;
 		}
+		if (handler.getKeyManager().keyJustPressed(KeyEvent.VK_ESCAPE)) {
+			State.setState(handler.getGame().pauseState);
+		}
+		
 	}
 	public void checkCollisionAndMove(){
 		handler.getWorld().playerLocation[xCoord][yCoord]=false;
@@ -100,6 +119,7 @@ public class Player {
 
 		if(handler.getWorld().appleLocation[xCoord][yCoord]){
 			Eat();
+			score++;
 		}
 
 		if(!handler.getWorld().body.isEmpty()) {
@@ -107,7 +127,13 @@ public class Player {
 			handler.getWorld().body.removeLast();
 			handler.getWorld().body.addFirst(new Tail(x, y,handler));
 		}
-
+		if(!handler.getWorld().body.isEmpty()) {
+			for (key = 0; key < handler.getWorld().body.size(); key ++)
+				if( xCoord == handler.getWorld().body.get(key).x && yCoord == handler.getWorld().body.get(key).y) {
+					kill();
+				}
+		}
+		
 	}
 
 	public void render(Graphics g,Boolean[][] playeLocation){
@@ -244,6 +270,9 @@ public class Player {
 
 				handler.getWorld().playerLocation[i][j]=false;
 
+				JFrame window = new JFrame("");
+				JOptionPane.showMessageDialog(window, "Game Over");
+				System.exit(0);
 			}
 		}
 	}
@@ -255,4 +284,12 @@ public class Player {
 	public void setJustAte(boolean justAte) {
 		this.justAte = justAte;
 	}
+	
+	public void highScore (Graphics g) {
+		TheScore = Math.sqrt((2*score)+1);
+		g.setColor(Color.RED);
+		g.setFont(new Font("Arial",1,20));
+		g.drawString("Score:" +String.valueOf(TheScore),15,675);
+	}
+		
 }

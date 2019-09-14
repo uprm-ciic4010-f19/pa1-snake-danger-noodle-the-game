@@ -340,6 +340,8 @@ public class Player {
 			}
 		}
 	}
+	
+	
 
 	public boolean isJustAte() {
 		return justAte;
